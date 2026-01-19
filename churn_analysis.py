@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split, cross_val_score, GridSearc
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, confusion_matrix
 # Setting project paths
-project_dir = r"C:\Users\Najib\Documents\Najib's Projects\Customer Chun Analysis"
+project_dir = os.getcwd()
 data_path = os.path.join(project_dir, "WA_Fn-UseC_-Telco-Customer-Churn.csv")
 # Loading the dataset
 df = pd.read_csv(data_path)
@@ -337,3 +337,4 @@ with open(insights_path, 'w') as f:
 print(f"\nInsights saved to: {insights_path}")
 
 print("Model interpretation complete!")
+
