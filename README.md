@@ -1,67 +1,49 @@
-# 📊 Telco Customer Churn Prediction
-*A data-driven project focused on understanding and predicting customer churn in the telecom industry.*
+# Telco Customer Churn: Why Customers Leave and How to Keep Them
 
+## Project Overview
+Losing customers (known as "churn") is one of the biggest challenges for any subscription-based business. This project analyzes a telecommunications dataset to identify the "red flags" that lead to a customer leaving and builds a machine learning model to predict which customers are at risk before they quit.
 
-This project explores customer churn in the telecom industry using real-world data. As a data analyst, I used Python and machine learning to understand why customers leave and how businesses can reduce churn using data-driven decisions.
-## Executive Summary
- **Overview**: Analyzed a dataset of 7,043 Telco customers to identify churn drivers and build predictive models. Churn rate: 26.54%. Used EDA, feature engineering, and models like XGBoost (AUC: 0.845) to provide actionable recommendations.
+By identifying these customers early, the business can take proactive steps to keep them, saving money and improving long-term growth.
 
-**Key Wins**: Identified high-risk customer groups, such as month-to-month contract users, enabling targeted retention strategies.
-## Business Problem
- **Challenge**: Telco companies lose revenue from customer churn. Why do customers leave? How can we predict and prevent it?
+---
 
-**Goal**: Use historical customer data to identify churn drivers and predict which customers are most likely to leave, so the business can act early.
-## Methodology
- **Step-by-Step Approach**:
-1. **Data Loading & Cleaning**: Loaded CSV, handled missing values in TotalCharges, dropped duplicates/customerID.
-2. ### Exploratory Data Analysis (EDA)
+## Business Insights (The "So What?")
+After analyzing 7,000+ customer records, several key patterns emerged. If you're a business manager, here is what the data is telling us:
 
-**Churn by Tenure(Months)**
-![Tenure Group Churn](images/tenure_group_churn.png)
+1. **The "Contract" Trap**: Customers on **Month-to-Month contracts** are significantly more likely to leave than those on 1 or 2-year plans.
+2. **The Fiber Optic Paradox**: Surprisingly, customers with **Fiber Optic internet** churn at a higher rate. This suggests there might be issues with service reliability or price-to-value perception in that specific segment.
+3. **Payment Friction**: People using **Electronic Checks** leave more often than those on automatic bank transfers or credit cards.
+4. **The "Newbie" Phase**: Most churn happens in the first few months. If a customer stays past the first year, they are much more likely to remain loyal for a long time.
 
-**Numerical Features**
-![Numerical Features](images/numerical_features.png)
+---
 
-**Correlation Matrix**
-![Correlation Matrix](images/correlation_matrix.png)
+## The Technical Solution
+I built and compared three different AI models to see which could best predict churn:
+* **Logistic Regression** (The Baseline)
+* **Random Forest** (The Ensemble Approach)
+* **XGBoost** (The Winner)
 
-**Categorical Drivers**
-![Categorical Features](images/categorical_features.png)
+**Results:** The XGBoost model achieved an **AUC-ROC of 0.84**, meaning it is highly effective at distinguishing between loyal customers and those about to leave.
 
-3. **Feature Engineering**: Created `tenure_group`, `total_services`; encoded categoricals; scaled numerics.
-4. **Modeling**: Trained Logistic Regression, Random Forest, XGBoost with GridSearchCV. Evaluated with F1, AUC-ROC, confusion matrices.
-   - ROC Curves: ![ROC Curves](images/roc_curves.png)
-   - Confusion Matrices: ![Confusion Matrices](images/confusion_matrices.png)
-   - Feature Importance: ![Feature Importance](images/feature_importance.png)
-5. **Interpretation**: Derived insights from top features (e.g., Contract type).
+---
 
-**Tools Used**: Python (Pandas, Scikit-learn, XGBoost), Jupyter/Notebook for interactivity.
+## Recommendations
+To reduce the churn rate (currently 26.54%), the business should:
+* **Incentivize Long-term Contracts**: Offer a small discount for switching from month-to-month to a 1-year plan.
+* **Audit the Fiber Optic Experience**: Investigate why high-speed users are unhappy.
+* **Promote Auto-Pay**: Give a one-time credit to customers who switch from electronic checks to automated billing.
 
-## Key Skills & Tools
-- **Data Cleaning & EDA**: Handling nulls, visualizations for insights.
-- **Feature Engineering**: Binning, encoding, scaling.
-- **Machine Learning**: Model training, tuning, evaluation (AUC, F1, ROC).
-- **Business Acumen**: Translated data to recommendations (e.g., incentives for fiber optic users).
-- **Tools**: Python, GitHub, Markdown for portfolios.
+---
 
-## Results and Business Recommendations
- **Results**:
-- Best Model: XGBoost (AUC: 0.845, F1 for Churn: 0.58).
-- Top Features: Contract type, Internet Service, Payment Method.
+## Project Structure
+* `Raw_data.csv`: The original, untouched dataset.
+* `cleaned_data.csv`: The data after handling missing values and formatting.
+* `churn_analysis.py`: The Python "engine" that cleans data and trains the models.
+* `models/`: Contains the saved "brains" (Pickle files) of the trained models.
 
-  
-**Recommendations** :
-- Offer discounts to month-to-month customers to encourage longer contracts.
-- Target fiber optic users with loyalty perks (they churn more).
-- Promote auto-payments over electronic checks to reduce churn.
-- Engage new customers early (first-year churn is high).
+---
 
-**EDA Summary** (from eda_summary.txt): Churn Rate: 26.54%. Key drivers: Short tenure, etc.
-
-## How to Run This Project
-1. Clone repo: `git clone https://github.com/najeebullahii/telco-customer-churn-analysis.git`
-2. Install dependencies: `pip install -r requirements.txt`
-3. Run: `python churn_analysis.py`
-
-## License
-MIT License—feel free to fork and improve!
+## How to Run
+1. Clone this repo.
+2. Install requirements: `pip install pandas xgboost scikit-learn seaborn`
+3. Run the analysis: `python churn_analysis.py`
