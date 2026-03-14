@@ -231,20 +231,3 @@ MIT License — free to use and adapt for your own projects.
 ```
 
 ---
-
-**Two things to do after pasting:**
-
-**1. Fix your GitHub topics** — go to the gear icon on your repo and replace the single long tag with these individual ones:
-```
-python  machine-learning  xgboost  scikit-learn  churn-prediction  data-science  classification  eda  telecom
-```
-
-**2. Update requirements.txt** — open it and make sure it contains:
-```
-pandas
-numpy
-scikit-learn
-xgboost
-matplotlib
-seaborn
-joblib
