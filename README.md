@@ -2,31 +2,29 @@
 
 ---
 
-## Overview
+## What This Project Is About
 
-Customer churn — when subscribers cancel or stop using a service — is one of the most damaging and preventable problems in subscription-based businesses. Acquiring a new customer costs five to seven times more than retaining an existing one, which means every churned customer represents a compounded loss.
+Telecom companies lose customers every month and most of them never really know why until it's too late. This project tries to change that.
 
-This project analyses 7,043 telecom customer records to identify the behavioural and contractual patterns that precede churn, and builds three machine learning models to predict which customers are at risk before they leave. The best model — XGBoost — achieved an AUC-ROC of 0.84, meaning it correctly distinguishes between loyal and at-risk customers 84% of the time.
+I analysed 7,043 telecom customer records to figure out which customers are most likely to cancel their service — and more importantly, why. The end goal was not just to build a model that predicts churn, but to extract actionable patterns that a retention team could actually use.
 
-The output is not just a model. It is a set of specific, data-backed recommendations that a retention team can act on immediately.
+The project covers the full pipeline: exploratory data analysis, feature engineering, training and comparing three machine learning models, and translating the results into specific business recommendations. The best model — XGBoost — correctly identifies at-risk customers 84% of the time based on AUC-ROC.
+
+The current churn rate in this dataset is 26.54%. That is roughly one in four customers. For any subscription business, that number demands attention.
 
 ---
 
-## Business Insights
+## What I Found
 
-After analysing the full dataset, four patterns emerged that explain the majority of churn behaviour.
+The analysis kept pointing back to the same four patterns regardless of which angle I looked from.
 
-**The Contract Trap**
-Customers on month-to-month contracts churn at dramatically higher rates than those on one or two-year plans. The flexibility that attracts these customers is the same flexibility that makes it easy for them to leave. Converting even a fraction of this segment to annual contracts would have a measurable impact on retention.
+**Contract type is everything.** Month-to-month customers churn at a rate that is completely out of proportion to the rest of the base. The flexibility that attracts them is the same flexibility that makes it trivially easy to leave. This turned out to be the second and third most important feature in the final model, which tells you how dominant this factor really is.
 
-**The Fiber Optic Paradox**
-Fiber optic internet customers — the highest-value subscribers — churn more than DSL or no-internet customers. This is counterintuitive. It suggests that price-to-value perception is broken in this segment, or that service reliability issues are driving dissatisfaction among the most engaged users.
+**Fiber optic customers are unhappy.** This one surprised me. You would expect the highest-tier internet subscribers to be the most satisfied — they are paying for the best product. Instead, they churn more than DSL users and significantly more than customers with no internet service. Something is broken in that experience, whether it is pricing, reliability, or a gap between what was promised and what is actually delivered.
 
-**Payment Friction**
-Customers paying by electronic check churn significantly more than those on automatic bank transfers or credit cards. Manual payment methods introduce friction and missed payments, both of which are associated with disengagement. This is one of the easiest levers to pull — incentivising a switch to auto-pay costs very little.
+**How people pay predicts whether they stay.** Customers paying by electronic check churn at noticeably higher rates than those on automatic bank transfers or credit cards. Manual payment methods introduce friction, missed payments, and a general sense of lower commitment. This is one of the easiest things to fix.
 
-**The Newbie Phase**
-Churn is heavily concentrated in the first twelve months. Customers who survive past year one become substantially more loyal. The first year is the critical retention window — most of the business risk lives there.
+**The first year is when you lose people.** Churn is heavily concentrated in the 0 to 12 month window. Customers who make it past the first year become dramatically more loyal. If a retention programme exists, it should be almost entirely focused on new customers.
 
 ---
 
@@ -36,55 +34,47 @@ Churn is heavily concentrated in the first twelve months. Customers who survive 
 
 ![Churn Distribution](https://raw.githubusercontent.com/najeebullahii/Telco_Customer_Churn_Prediction/main/images/churn_distribution.png)
 
-*26.54% of customers in the dataset have churned — a meaningful rate that justifies a dedicated predictive modelling effort.*
+*Just over a quarter of customers have churned. That is high enough to justify a dedicated predictive effort.*
 
 **Key Categorical Drivers**
 
 ![Categorical Features by Churn](https://raw.githubusercontent.com/najeebullahii/Telco_Customer_Churn_Prediction/main/images/categorical_features.png)
 
-*Contract type, internet service type, and payment method are the three categorical variables with the strongest relationship to churn.*
+*Contract type, internet service, and payment method — these three variables explain most of what is happening.*
 
-**Tenure and Numerical Features**
+**Tenure and Charges**
 
 ![Numerical Features by Churn](https://raw.githubusercontent.com/najeebullahii/Telco_Customer_Churn_Prediction/main/images/numerical_features.png)
 
-*Short-tenure customers and those with higher monthly charges show disproportionately higher churn rates.*
+*Short-tenure customers and those with higher monthly charges are far more likely to churn.*
 
 **Churn by Tenure Group**
 
 ![Tenure Group Churn Rate](https://raw.githubusercontent.com/najeebullahii/Telco_Customer_Churn_Prediction/main/images/tenure_group_churn.png)
 
-*Customers in their first 12 months churn at the highest rate. The risk drops sharply after the first year and continues declining with tenure.*
+*The first twelve months are the danger zone. After that, the churn rate drops sharply and keeps falling.*
 
 ---
 
-## Model Development
+## The Models
 
-Three models were built and evaluated. All models used an 80/20 stratified train-test split to preserve the class distribution across both sets.
+I built three models and compared them properly rather than just picking the most popular one.
 
-**Preprocessing pipeline:**
-- Missing values in TotalCharges filled with column median
-- Binary categorical columns (Yes/No, gender) encoded as 0/1
-- Multi-category columns one-hot encoded
-- Numerical features standardised using StandardScaler
-- A total_services feature was engineered to capture how many active services each customer holds
+All models used an 80/20 stratified train-test split. Both Random Forest and XGBoost were tuned with 5-fold cross-validated GridSearchCV optimising for F1 score, since a model that ignores the minority class is useless for churn prediction.
 
-**Hyperparameter tuning:**
-Both Random Forest and XGBoost were tuned using 5-fold cross-validated GridSearchCV optimising for F1 score on the training set.
+Before modelling, the data went through a proper preprocessing pipeline — missing TotalCharges values filled with the column median, binary columns encoded as 0/1, multi-category columns one-hot encoded, and numerical features standardised. I also engineered a total_services feature that counts how many active services each customer holds, which turned out to be a useful signal.
 
----
+**Results:**
 
-## Model Results
-
-| Model | AUC-ROC | F1 Score (Churn class) |
+| Model | AUC-ROC | F1 Score (Churn) |
 |---|---|---|
 | Logistic Regression | Baseline | — |
 | Random Forest | — | — |
 | XGBoost | **0.840** | **0.58** |
 
-**XGBoost was selected as the final model** based on its superior AUC-ROC score.
+XGBoost won. The ROC curves below show the separation clearly.
 
-**ROC Curves — All Three Models**
+**ROC Curves**
 
 ![ROC Curves](https://raw.githubusercontent.com/najeebullahii/Telco_Customer_Churn_Prediction/main/images/roc_curves.png)
 
@@ -94,13 +84,11 @@ Both Random Forest and XGBoost were tuned using 5-fold cross-validated GridSearc
 
 ---
 
-## Feature Importance
+## What the Model Says Matters
 
 ![XGBoost Feature Importance](https://raw.githubusercontent.com/najeebullahii/Telco_Customer_Churn_Prediction/main/images/feature_importance.png)
 
-The five features with the highest predictive weight in the XGBoost model:
-
-| Rank | Feature | Importance Score |
+| Rank | Feature | Importance |
 |---|---|---|
 | 1 | Internet Service — Fiber Optic | 0.193 |
 | 2 | Contract — One Year | 0.191 |
@@ -108,31 +96,46 @@ The five features with the highest predictive weight in the XGBoost model:
 | 4 | Internet Service — No Internet | 0.081 |
 | 5 | Payment Method — Electronic Check | 0.073 |
 
-Contract type and internet service together account for over 65% of the model's predictive power. These are not marginal factors — they are the primary drivers of churn.
+Contract type and internet service together account for over 65% of the model's predictive power. That is not a subtle finding — those two variables essentially tell you whether a customer is going to stay or leave.
 
----
-
-## Correlation Analysis
+**Correlation Matrix**
 
 ![Correlation Matrix](https://raw.githubusercontent.com/najeebullahii/Telco_Customer_Churn_Prediction/main/images/correlation_matrix.png)
 
-*Tenure shows the strongest negative correlation with churn. Monthly charges show a slight positive correlation. Total charges correlates strongly with tenure, as expected.*
+*Tenure has the strongest negative relationship with churn. The longer someone has been a customer, the less likely they are to leave — which makes the first-year focus even more important.*
 
 ---
 
 ## Recommendations
 
-**Incentivise long-term contracts**
-Offer a meaningful discount — not a token gesture — to month-to-month customers willing to commit to a one-year plan. Contract type is the second and third most important feature in the model. Moving customers off month-to-month is the single highest-impact retention lever available.
+**Move people off month-to-month contracts.** This is the highest-impact action available. A meaningful discount — not a token offer — for switching to a one-year plan directly addresses the top predictive factors in the model. The cost of the discount is small compared to the lifetime value of a retained customer.
 
-**Investigate the fiber optic experience**
-Fiber optic internet is the top predictive feature for churn. This requires operational investigation, not just a marketing response. Is there a reliability issue? A pricing problem? A gap between what was promised and what is delivered? The data signals the problem — the business needs to find the root cause.
+**Find out what is wrong with fiber optic.** The model flags this as the single most important churn predictor. A marketing response alone will not fix it. This needs an operational investigation — service reliability data, support ticket analysis, customer satisfaction scores specific to that segment. Something is causing high-value customers to leave at higher rates than everyone else.
 
-**Convert electronic check users to auto-pay**
-Offer a one-time bill credit to customers who switch from electronic checks to automatic bank transfer or credit card billing. The cost of the incentive is small relative to the cost of losing the customer.
+**Get electronic check users onto auto-pay.** A one-time bill credit for switching to automatic payment is a cheap intervention that targets a measurable risk factor. It also reduces payment friction and missed payments, which have their own downstream effects.
 
-**Build a first-year engagement programme**
-Churn is disproportionately concentrated in the first twelve months. A structured onboarding and check-in programme — proactive outreach at 30, 90, and 180 days — directly targets the period of highest risk.
+**Build a structured first-year programme.** Since most churn happens in year one, a proactive outreach sequence — check-ins at 30, 90, and 180 days — directly addresses the highest-risk window. This does not need to be expensive. A well-timed email or call at the right moment can change the trajectory.
+
+---
+
+## How It Was Built
+
+**Data Cleaning**
+- TotalCharges had blank strings instead of nulls for new customers — converted and filled with the column median
+- Removed duplicate rows and dropped the customerID column
+- Saved cleaned dataset to `data/cleaned_data.csv`
+
+**Feature Engineering**
+- Created tenure_group bands (0-12, 13-24, 25-36, 37-48, 49-60, 61-72 months)
+- Engineered total_services feature counting active subscriptions per customer
+- Binary encoded Yes/No columns and gender
+- One-hot encoded Contract, InternetService, PaymentMethod, and tenure_group
+
+**Modelling**
+- Train/test split: 80/20 stratified on the churn label
+- Logistic Regression as interpretable baseline
+- Random Forest and XGBoost both tuned with GridSearchCV across key hyperparameters
+- All three models saved as pickle files for reuse
 
 ---
 
@@ -140,13 +143,12 @@ Churn is disproportionately concentrated in the first twelve months. A structure
 
 | Component | Technology |
 |---|---|
-| Programming language | Python 3 |
+| Language | Python 3 |
 | Data manipulation | Pandas, NumPy |
 | Machine learning | Scikit-learn, XGBoost |
 | Visualisation | Matplotlib, Seaborn |
 | Model persistence | Joblib |
-| Hyperparameter tuning | GridSearchCV (5-fold CV) |
-| Version control | Git and GitHub |
+| Tuning | GridSearchCV with 5-fold cross-validation |
 
 ---
 
@@ -157,22 +159,22 @@ Telco_Customer_Churn_Prediction/
 │   ├── Raw_data.csv                      # Original IBM Telco dataset
 │   └── cleaned_data.csv                  # Cleaned and preprocessed dataset
 ├── images/
-│   ├── churn_distribution.png            # Target variable distribution
-│   ├── numerical_features.png            # Tenure, charges histograms by churn
+│   ├── churn_distribution.png            # Target variable overview
+│   ├── numerical_features.png            # Tenure and charges by churn
 │   ├── categorical_features.png          # Contract, internet, payment by churn
-│   ├── correlation_matrix.png            # Numerical feature correlations
-│   ├── tenure_group_churn.png            # Churn rate by tenure band
-│   ├── roc_curves.png                    # ROC curves for all three models
+│   ├── correlation_matrix.png            # Feature correlations
+│   ├── tenure_group_churn.png            # Churn rate broken down by tenure band
+│   ├── roc_curves.png                    # ROC curves comparing all three models
 │   ├── confusion_matrices.png            # Confusion matrices for all three models
 │   └── feature_importance.png            # XGBoost top feature importances
 ├── models/
-│   ├── logistic_regression_model.pkl     # Saved logistic regression model
-│   ├── random_forest_model.pkl           # Saved random forest model
-│   └── xgboost_model.pkl                 # Saved XGBoost model (best)
-├── churn_analysis.py                     # Full pipeline — EDA, preprocessing, modelling
-├── eda_summary.txt                       # EDA findings summary
+│   ├── logistic_regression_model.pkl     # Saved logistic regression
+│   ├── random_forest_model.pkl           # Saved random forest
+│   └── xgboost_model.pkl                 # Saved XGBoost — best performing model
+├── churn_analysis.py                     # Full pipeline script
+├── eda_summary.txt                       # EDA findings
 ├── model_insights.txt                    # Model results and feature importances
-├── requirements.txt                      # Python dependencies
+├── requirements.txt
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -181,30 +183,16 @@ Telco_Customer_Churn_Prediction/
 ---
 
 ## Running the Project
-
-**1. Clone the repository**
 ```bash
 git clone https://github.com/najeebullahii/Telco_Customer_Churn_Prediction.git
 cd Telco_Customer_Churn_Prediction
-```
-
-**2. Create a virtual environment**
-```bash
 python -m venv venv
 venv\Scripts\activate
-```
-
-**3. Install dependencies**
-```bash
 pip install -r requirements.txt
-```
-
-**4. Run the full pipeline**
-```bash
 python churn_analysis.py
 ```
 
-Running this script executes the complete pipeline in sequence — data cleaning, exploratory analysis, feature engineering, model training with hyperparameter tuning, evaluation, and result export. All plots are saved to the `images/` folder and all trained models are saved to the `models/` folder automatically.
+Running `churn_analysis.py` executes the full pipeline from cleaning through to model evaluation. All plots save automatically to `images/` and all trained models save to `models/`.
 
 ---
 
@@ -213,18 +201,14 @@ Running this script executes the complete pipeline in sequence — data cleaning
 IBM Telco Customer Churn Dataset — available on Kaggle:
 https://www.kaggle.com/datasets/blastchar/telco-customer-churn
 
-7,043 customer records across 21 features including contract type, internet service, payment method, tenure, and monthly charges.
-
 ---
 
 ## Limitations
 
-- The dataset is synthetically generated by IBM for demonstration purposes and may not perfectly reflect real-world telecom customer behaviour
-- Class imbalance (26.54% churn vs 73.46% retained) was not explicitly addressed with techniques such as SMOTE or class weighting — this is a potential improvement
-- The model predicts churn probability but does not estimate the financial value of retaining each customer, which would be necessary for prioritising outreach
+The dataset is synthetically generated by IBM which means it may not capture the full complexity of real-world churn behaviour. Class imbalance was not explicitly addressed with techniques like SMOTE or class weighting, which is a reasonable next step. The model also does not estimate the financial value of each at-risk customer, which would be needed to properly prioritise retention outreach.
 
 ---
 
 ## License
 
-MIT License — free to use and adapt for your own projects.
+MIT License — free to use for your own projects.
